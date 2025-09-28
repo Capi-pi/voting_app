@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../static/vote.css">
+  <title>Vote</title>
+</head>
+<body>
+  
+  <div id="flow" class="accueil">
+    <!-- Le JS va injecter ici l'écran du poste courant -->
+  </div>
+  
+
+  <script>
+    const POSTS = {{ posts|tojson }}; 
+    const CANDIDATS = {{ candidats|tojson }};
+    let current = 0;
+
+    function renderPost(postName) {
+      const div = document.getElementById('flow');
+      const cands = CANDIDATS[postName] || [];
+      let html = `<h1>Poste : ${postName.replace('_',' ')}</h1>`;
+      html += `<form id="form-post">`;
+      html += `<div class="candidats">`;
+      console.log(cands)
+      for (const c of cands) {
+        html += `<label class="carte">
+                    <input type="radio" name="candidate" value="${c.value}" required>
+                    <div class="contenu-carte">
+                      <img src="${c.image}" alt="${c.value}">
+                      <h2>${c.label}</h2>
+                    </div>
+                </label>`;
+      }
+      html += `</div><br><button type="submit">Valider</button></form>`;
+      div.innerHTML = html;
+
+      const form = document.getElementById('form-post');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const candidate = formData.get('candidate');
+        const post = postName;
+        const res = await fetch('/api/vote', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({post, candidate})
+        });
+        const js = await res.json();
+        if (!res.ok) {
+          if (js.error === 'already_voted') {
+            alert('Vous avez déjà voté pour ce poste.');
+            // passe au suivant ou confirme
+            if (js.next) renderPost(js.next);
+            return;
+          }
+          alert('Erreur : ' + (js.error||res.status));
+          return;
+        }
+        if (js.done) {
+          window.location.href = '/confirm';
+          return;
+        } else if (js.next) {
+          renderPost(js.next);
+          return;
+        }
+      });
+    }
+
+    // démarrer le flow
+    renderPost(POSTS[0]);
+  </script>
+</body>
+</html>

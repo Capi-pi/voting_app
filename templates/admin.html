@@ -1,1 +1,180 @@
-// dashboard admin
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+  <title>Tableau de bord - Admin</title>
+</head>
+<body>
+  <header style="margin-bottom:1rem;">
+    <h1>Tableau de bord - Admin</h1>
+  </header>
+
+  <!-- BLOCK CHART -->
+  <div class="chart-block section">
+    <div class="chart-controls">
+      <div id="post-buttons" class="post-buttons" role="tablist" aria-label="Postes"></div>
+      <div class="chart-actions">
+        <button class="export" onclick="window.location.href='/export_csv'">Exporter CSV</button>
+      </div>
+    </div>
+
+    <div class="chart-canvas-wrap">
+      <canvas id="barChart" aria-label="Diagramme des votes" role="img"></canvas>
+    </div>
+  </div>
+
+  <!-- Résultats agrégés (table fallback) -->
+  <div class="section">
+    <h2>Résultats agrégés (table)</h2>
+    <table>
+      <thead>
+        <tr><th>Poste</th><th>Candidat</th><th>Votes</th></tr>
+      </thead>
+      <tbody>
+        {% for post, rows in results.items() %}
+          {% for cand, count in rows %}
+          <tr>
+            <td>{{ post }}</td>
+            <td>{{ cand }}</td>
+            <td>{{ count }}</td>
+          </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Votes détaillés -->
+  <div class="section">
+    <h2>Votes détaillés</h2>
+    <table>
+      <thead>
+        <tr><th>ID étudiant</th><th>Poste</th><th>Candidat</th><th>Timestamp</th></tr>
+      </thead>
+      <tbody>
+        {% for v in votes %}
+        <tr>
+          <td>{{ v.student_id }}</td>
+          <td>{{ v.post }}</td>
+          <td>{{ v.candidate }}</td>
+          <td>{{ v.timestamp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Données agrégées injectées -->
+  <script>
+    // AGG est { post: [[candidate, count], ...], ... }
+    const AGG = {{ results | tojson }};
+  </script>
+
+  <!-- Chart.js: ONLINE CDN (décommenter si Internet disponible) -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+  <!-- Chart.js: LOCAL fallback (recommendé si hotspot sans Internet)
+       -> Télécharge chart.min.js (Chart.js v4) dans static/js/chart.min.js -->
+  <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+
+  <script>
+    // --- style / behaviour JS ---
+    const postButtonsContainer = document.getElementById('post-buttons');
+    const posts = Object.keys(AGG); // liste de postes
+    let currentPost = posts.length ? posts[0] : null;
+    let chart = null;
+
+    // create button for each post
+    function createButtons() {
+      posts.forEach((p, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'post-btn' + (idx===0 ? ' active' : '');
+        btn.type = 'button';
+        btn.innerText = p.replace(/_/g, ' ');
+        btn.dataset.post = p;
+        btn.setAttribute('role','tab');
+        btn.addEventListener('click', () => onPostClick(p, btn));
+        postButtonsContainer.appendChild(btn);
+      });
+    }
+
+    function onPostClick(postName, btnEl) {
+      if (postName === currentPost) return;
+      // toggle active class
+      document.querySelectorAll('.post-btn').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      currentPost = postName;
+      updateChartForPost(postName);
+    }
+
+    // Convert AGG[post] -> labels[] and data[]
+    function getSeriesForPost(postName) {
+      const rows = AGG[postName] || [];
+      const labels = rows.map(r => r[0]);
+      const data = rows.map(r => r[1]);
+      return { labels, data };
+    }
+
+    function createChart(ctx) {
+      const { labels, data } = getSeriesForPost(currentPost);
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Nombre de votes',
+            data: data,
+            backgroundColor: labels.map(() => 'rgba(74,144,226,0.9)'),
+            borderColor: labels.map(() => 'rgba(74,144,226,1)'),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { mode: 'index', intersect: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChartForPost(postName) {
+      if (!chart) return;
+      const { labels, data } = getSeriesForPost(postName);
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = data;
+      // optionally change colors if you want variety
+      chart.data.datasets[0].backgroundColor = labels.map(() => 'rgba(74,144,226,0.9)');
+      chart.update();
+    }
+
+    // init
+    (function init() {
+      createButtons();
+      // make canvas and ctx
+      const canvas = document.getElementById('barChart');
+      // set minimum height for chart area
+      canvas.style.width = '100%';
+      canvas.style.height = '320px';
+      const ctx = canvas.getContext('2d');
+      if (posts.length) {
+        createChart(ctx);
+      } else {
+        // show placeholder text if no posts
+        ctx.font = '16px Arial';
+        ctx.fillText('Aucun poste disponible', 10, 50);
+      }
+    })();
+  </script>
+</body>
+</html>
