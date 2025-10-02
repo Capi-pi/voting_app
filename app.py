@@ -1,7 +1,15 @@
 import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from generate_ids import load_ids
+
+# ------------- Generate unique ids -------------------
+generated_ids = load_ids("ids.csv")
+
+# -------------- Load .env variables ---------------
+load_dotenv()
 
 # ------set up and configuration-------
 app = Flask(__name__)
@@ -10,7 +18,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///votes.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# --- Model ---
+# --- Model of vote ---
 class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(128), nullable=False)
@@ -40,59 +48,72 @@ POSTS = [
 CANDIDATS = {
     "présidente": [
         {"value": "ngone", "label": "Ngoné Anne Pouye 2A", "image": "../static/images/president/ngone.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "nekhou", "label": "Aminata Nekhou 2B", "image": "../static/images/president/nekhou.jpeg"},
     ],
     "vice_président(e)": [
         {"value": "alioune", "label": "Alioune Ibrahima Dieng 1B", "image": "../static/images/vice_president/alioune.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "awa", "label": "Ndeye Awa Mar 1A", "image": "../static/images/vice_president/awa.jpeg"},
     ],
     "responsable_organisation": [
         {"value": "salimata", "label": "Mame Salimata Gueye 2A", "image": "../static/images/responsable_organisation/salimata.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "arame", "label": "Arame Diagne 2B", "image": "../static/images/responsable_organisation/arame.jpeg"},
     ],
     "adjoint_organisation": [
         {"value": "aida", "label": "Aida Niang 1A", "image": "../static/images/adjoint_organisation/aida.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "maroufa", "label": "Maroufa 1B", "image": "../static/images/adjoint_organisation/maroufa.jpeg"},
     ],
     "secrétaire": [
         {"value": "fatou", "label": "Fatou Kiné Basse 2A", "image": "../static/images/secretaire/fatou.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "roseline", "label": "Roseline Wonou 2B", "image": "../static/images/secretaire/roseline.jpeg"},
     ],
     "adjoint_secrétaire": [
         {"value": "assietou", "label": "Ndeye Assietou Diouf 1A", "image": "../static/images/adjoint_secretaire/assietou.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "bakary", "label": "Bakary 1B", "image": "../static/images/adjoint_secretaire/bakary.jpeg"},
     ],
     "responsable_communication": [
         {"value": "yaye", "label": "Yaye Aminatou Ndiaye 2A", "image": "../static/images/responsable_communication/yaye.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint_communication": [
         {"value": "adama", "label": "Adama Gueye 1A", "image": "../static/images/adjoint_communication/adama.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "aby", "label": "Aby Dieye Fall 1B", "image": "../static/images/adjoint_communication/aby.jpeg"},
     ],
     "responsable_trésorerie": [
         {"value": "marieme", "label": "Marieme Seck Fall 2A", "image": "../static/images/responsable_tresorerie/marieme.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "diari", "label": "Diari Koursoum Wane 2B", "image": "../static/images/responsable_tresorerie/diari.jpeg"},
     ],
     "adjoint_trésorerie": [
         {"value": "marietou", "label": "Mariétou SALL 1B", "image": "../static/images/adjoint_tresorerie/marietou.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "responsable_relations_extérieures": [
         {"value": "seyni", "label": "Ndeye Fatou Seyni Ndaw 2A", "image": "../static/images/responsable_relations_exterieures/seyni.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "badara", "label": "Alioune Badara Niang 2B", "image": "../static/images/responsable_relations_exterieures/badara.jpeg"},
     ],
     "adjoint_relations_extérieures": [
         {"value": "zeynab", "label": "Zeynab 1B", "image": "../static/images/adjoint_relations_exterieures/zeynab.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+        {"value": "oceanne", "label": "Océanne Grâce Esther Ouattara 1A", "image": "../static/images/adjoint_relations_exterieures/oceanne.jpeg"}
     ],
     "responsable_sport": [
         {"value": "babacar", "label": "Mbaye Babacar Ndiaye Faye 2A", "image": "../static/images/responsable_sport/babacar.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint_sport": [
         {"value": "radji", "label": "Radji Mohanad 1B", "image": "../static/images/adjoint_sport/radji.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
         {"value": "lamine", "label": "Lamine Gueye 1B", "image": "../static/images/adjoint_sport/lamine.jpeg"},
     ],
 }
-
-
 
 
 
@@ -126,6 +147,8 @@ def login():
         student_id = request.form.get("student_id", "").strip()
         if not student_id:
             return render_template("login.html", error="Identifiant requis")
+        elif student_id not in generated_ids:
+            return render_template("login.html", error="Identifiant incorrect")
         session.clear()
         session["student_id"] = student_id
         return redirect(url_for("vote"))
@@ -244,5 +267,7 @@ def export_csv():
     output = si.getvalue()
     return app.response_class(output, mimetype="text/csv", headers={"Content-Disposition":"attachment;filename=votes.csv"})
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
