@@ -46,25 +46,27 @@
     </table>
   </div>
 
-  <!-- Votes détaillés -->
-  <div class="section">
-    <h2>Votes détaillés</h2>
+  <!-- Utilisateurs n'ayant pas encore voté -->
+<div class="section">
+  <h2>Utilisateurs n’ayant pas encore voté</h2>
+  {% if non_voters %}
     <table>
       <thead>
-        <tr><th>ID étudiant</th><th>Poste</th><th>Candidat</th><th>Timestamp</th></tr>
+        <tr><th>ID étudiant</th></tr>
       </thead>
       <tbody>
-        {% for v in votes %}
+        {% for student_id in non_voters %}
         <tr>
-          <td>{{ v.student_id }}</td>
-          <td>{{ v.post }}</td>
-          <td>{{ v.candidate }}</td>
-          <td>{{ v.timestamp }}</td>
+          <td>{{ student_id }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-  </div>
+  {% else %}
+    <p>Tous les utilisateurs ont voté 🎉</p>
+  {% endif %}
+</div>
+
   <footer class="footer">
     <p>Copyright © 2025 — @alpha @olivier @babs @cps</p>
   </footer>
