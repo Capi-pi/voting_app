@@ -212,18 +212,40 @@ def admin_login():
         return render_template("admin_login.html", error="Mauvais mot de passe")
     return render_template("admin_login.html")
 
+
 @app.route("/admin")
 def admin():
     if not require_admin():
         return redirect(url_for("admin_login"))
-    # Résultats agrégés
-    rows = db.session.query(Vote.post, Vote.candidate, db.func.count(Vote.id)).group_by(Vote.post, Vote.candidate).all()
-    # transform to dict {post: [(candidate, count), ...], ...}
+
+    # --- Résultats agrégés ---
+    rows = (
+        db.session.query(Vote.post, Vote.candidate, db.func.count(Vote.id))
+        .group_by(Vote.post, Vote.candidate)
+        .all()
+    )
+
     results = {}
     for post, candidate, count in rows:
         results.setdefault(post, []).append((candidate, count))
+
+    # --- Votes détaillés ---
     votes = Vote.query.order_by(Vote.timestamp.desc()).all()
-    return render_template("admin.html", results=results, votes=votes)
+
+    # --- IDs qui ont voté ---
+    voted_ids = {v.student_id for v in votes}
+
+    # --- Utilisateurs qui n'ont pas encore voté ---
+    non_voters = [sid for sid in generated_ids if sid not in voted_ids]
+
+    return render_template(
+        "admin.html",
+        results=results,
+        votes=votes,
+        non_voters=non_voters
+    )
+
+
 
 """ @app.route("/admin")
 def admin():
