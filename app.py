@@ -69,7 +69,7 @@ CANDIDATS = {
     "secrétaire": [
         {"value": "fatou", "label": "Fatou Kiné Basse 2A", "image": "../static/images/secretaire/fatou.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc3.jpg"},
-        {"value": "roseline", "label": "Roseline Wonou 2B", "image": "../static/images/secretaire/roseline.jpeg"},
+        {"value": "roselyne", "label": "Roselyne Wonou 2B", "image": "../static/images/secretaire/roselyne.jpeg"},
     ],
     "adjoint_secrétaire": [
         {"value": "assietou", "label": "Ndeye Assietou Diouf 1A aka ASSY", "image": "../static/images/adjoint_secretaire/assietou.jpeg"},
