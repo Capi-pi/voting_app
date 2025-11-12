@@ -29,89 +29,17 @@ class Vote(db.Model):
 
 # --- Posts and Candidates ---
 POSTS = [
-    "présidente",
-    "vice_président(e)",
-    "responsable_organisation",
-    "adjoint_organisation",
-    "secrétaire",
-    "adjoint_secrétaire",
-    "responsable_communication",
-    "adjoint_communication",
-    "responsable_trésorerie",
-    "adjoint_trésorerie",
-    "responsable_relations_extérieures",
-    "adjoint_relations_extérieures",
-    "responsable_sport",
-    "adjoint_sport"
+    "président"
 ]
 
 CANDIDATS = {
-    "présidente": [
-        {"value": "ngone", "label": "Ngoné Anne Pouye 2A", "image": "../static/images/president/ngone.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
-        {"value": "nekhou", "label": "Aminata Nekhou 2B", "image": "../static/images/president/nekhou.jpeg"},
-    ],
-    "vice_président(e)": [
-        {"value": "alioune", "label": "Alioune Ibrahima Dieng 1B", "image": "../static/images/vice_president/alioune.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
-        {"value": "awa", "label": "Ndeye Awa Mar 1A", "image": "../static/images/vice_president/awa.jpeg"},
-    ],
-    "responsable_organisation": [
-        {"value": "salimata", "label": "Mame Salimata Gueye 2A", "image": "../static/images/responsable_organisation/salimata.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc2.jpg"},
-        {"value": "arame", "label": "Arame Diagne 2B", "image": "../static/images/responsable_organisation/arame.jpeg"},
-    ],
-    "adjoint_organisation": [
-        {"value": "aida", "label": "Aida Niang 1A", "image": "../static/images/adjoint_organisation/aida.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc2.jpg"},
-        {"value": "maroufa", "label": "Maroufa 1B", "image": "../static/images/adjoint_organisation/maroufa.jpeg"},
-    ],
-    "secrétaire": [
-        {"value": "fatou", "label": "Fatou Kiné Basse 2A", "image": "../static/images/secretaire/fatou.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc3.jpg"},
-        {"value": "roselyne", "label": "Roselyne Wonou 2B", "image": "../static/images/secretaire/roselyne.jpeg"},
-    ],
-    "adjoint_secrétaire": [
-        {"value": "assietou", "label": "Ndeye Assietou Diouf 1A aka ASSY", "image": "../static/images/adjoint_secretaire/assietou.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc3.jpg"},
-        {"value": "bakary", "label": "Bakary 1B", "image": "../static/images/adjoint_secretaire/bakary.jpeg"},
-    ],
-    "responsable_communication": [
-        {"value": "yaye", "label": "Yaye Aminatou Ndiaye 2A", "image": "../static/images/responsable_communication/yaye.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc2.jpg"},
-    ],
-    "adjoint_communication": [
-        {"value": "adama", "label": "Adama Gueye 1A aka ADO", "image": "../static/images/adjoint_communication/adama.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc5.webp"},
-        {"value": "aby", "label": "Aby Dieye Fall 1B", "image": "../static/images/adjoint_communication/aby.jpeg"},
-    ],
-    "responsable_trésorerie": [
-        {"value": "marieme", "label": "Marieme Seck Fall 2A", "image": "../static/images/responsable_tresorerie/marieme.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
-        {"value": "diari", "label": "Diari Koursoum Wane 2B", "image": "../static/images/responsable_tresorerie/diari.jpeg"},
-    ],
-    "adjoint_trésorerie": [
-        {"value": "marietou", "label": "Mariétou SALL 1B", "image": "../static/images/adjoint_tresorerie/marietou.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc2.jpg"},
-    ],
-    "responsable_relations_extérieures": [
-        {"value": "seyni", "label": "Ndeye Fatou Seyni Ndaw 2A", "image": "../static/images/responsable_relations_exterieures/seyni.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
-        {"value": "badara", "label": "Alioune Badara Niang 2B", "image": "../static/images/responsable_relations_exterieures/badara.jpeg"},
-    ],
-    "adjoint_relations_extérieures": [
-        {"value": "zeynab", "label": "Zeïnab Maïmouna Aïdara Mauricio 1B", "image": "../static/images/adjoint_relations_exterieures/zeynab.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc3.jpg"},
-        {"value": "oceanne", "label": "Océanne Grâce Esther Ouattara 1A", "image": "../static/images/adjoint_relations_exterieures/oceanne.jpeg"}
-    ],
-    "responsable_sport": [
-        {"value": "babacar", "label": "Mbaye Babacar Ndiaye Faye 2A", "image": "../static/images/responsable_sport/babacar.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc2.jpg"},
-    ],
-    "adjoint_sport": [
-        {"value": "lamine", "label": "Lamine Gueye 1B", "image": "../static/images/adjoint_sport/lamine.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc2.jpg"},
-    ],
+    "président": [
+        {"value": "khadija", "label": "Khadija Aïssé Mangane 1LD", "image": "../static/images/khadija.jpeg"},
+        {"value": "abdoulaye", "label": "El Hadji Abdoulaye Ndiaye 1S2D", "image": "../static/images/abdoulaye.jpeg"},
+        {"value": "coumba", "label": "Coumba Traoré 1LB", "image": "../static/images/coumba.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"}
+
+    ]
 }
 
 

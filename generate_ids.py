@@ -13,7 +13,7 @@ def load_ids(file=ID_FILE):
     with open(file, newline="") as f:
         return set(row[0] for row in csv.reader(f))
 
-# Sauver un ID
+# enregistrer un ID
 def save_id(new_id):
     with open(ID_FILE, "a", newline="") as f:
         writer = csv.writer(f)
@@ -28,11 +28,11 @@ def generate_unique_id(length=4):
             return new_id
 
 def main():
-    N_STUDENT = 130
+    N_STUDENT = 150
 
     for _ in range(N_STUDENT):
         generate_unique_id()
 
 
 if __name__ == "__main__":
-    print(load_ids())
+    main()
