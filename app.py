@@ -5,55 +5,113 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from generate_ids import load_ids
 
-# ------------- Generate unique ids -------------------
 generated_ids = load_ids("ids.csv")
-
-# -------------- Load .env variables ---------------
 load_dotenv()
 
-# ------set up and configuration-------
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret_in_prod")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///local.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# --- Model of vote ---
+
 class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(128), nullable=False)
     post = db.Column(db.String(64), nullable=False)
     candidate = db.Column(db.String(128), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
-    __table_args__ = (db.UniqueConstraint('student_id', 'post', name='u_student_post'),)
+    __table_args__ = (db.UniqueConstraint("student_id", "post", name="u_student_post"),)
+
 
 # --- Posts and Candidates ---
 POSTS = [
-    "président"
+    "président",
+    "vice-président",
+    "trésorier",
+    "responsable communication",
+    "responsable relations extérieures",
+    "responsable sport",
+    "responsable organisation",
+    "secrétaire",
+    "adjoint trésorier",
+    "adjoint communication",
+    "adjoint relations extérieures",
+    "adjoint sport",
+    "adjoint organisation",
+    "adjoint secrétaire",
 ]
 
 CANDIDATS = {
     "président": [
-        {"value": "khadija", "label": "Khadija Aïssé Mangane 1LD", "image": "../static/images/khadija.jpeg"},
-        {"value": "abdoulaye", "label": "El Hadji Abdoulaye Ndiaye 1S2D", "image": "../static/images/abdoulaye.jpeg"},
-        {"value": "coumba", "label": "Coumba Traoré 1LB", "image": "../static/images/coumba.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"}
-
-    ]
+        
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "vice-président": [
+        {"value": "daouda", "label": "Daouda", "image": ""},
+        {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "trésorier": [],
+    "responsable communication": [],
+    "responsable relations extérieures": [],
+    "responsable sport": [],
+    "responsable organisation": [],
+    "secrétaire": [],
+    "adjoint trésorier": [
+        {"value": "thiane", "label": "Thiane Mbengue", "image": ""},
+        {"value": "seynabou", "label": "Seynabou", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint communication": [
+        {"value": "marie", "label": "Marie Khemesse", "image": ""},
+        {"value": "milike", "label": "Milike", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint relations extérieures": [
+        {"value": "racine", "label": "Racine", "image": ""},
+        {"value": "moustapha", "label": "Moustapha Sarr", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint sport": [
+        {"value": "madiaw", "label": "Madiaw Diouf", "image": ""},
+        {"value": "cheikh", "label": "Cheikh Niang", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint organisation": [
+        {"value": "mamy", "label": "Mamy Thiam", "image": ""},
+        {"value": "raymonde", "label": "Raymonde", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint secrétaire": [
+        {"value": "khadija", "label": "Khadija Ndiaye", "image": ""},
+        {"value": "akapata", "label": "Akpata Ormiel", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
 }
 
+for post in POSTS:
+    if not CANDIDATS[post]:
+        CANDIDATS[post] = [
+            {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"}
+        ]
 
+
+def next_unvoted_post(student_id):
+    voted_posts = {
+        post
+        for (post,) in db.session.query(Vote.post).filter_by(student_id=student_id).all()
+    }
+    return next((post for post in POSTS if post not in voted_posts), None)
 
 # --- DB init + WAL ---
 with app.app_context():
     db.create_all()
-    # Improve concurrent writes in SQLite
     try:
         db.session.execute("PRAGMA journal_mode=WAL;")
     except Exception:
         pass
 
-# --- Helpers ---
 def require_login():
     if "student_id" not in session:
         return False
@@ -88,16 +146,23 @@ def logout():
 
 @app.route("/vote")
 def vote():
-    # Page unique qui héberge le JS et le flow client-side
     if not require_login():
         return redirect(url_for("login"))
-    return render_template("vote.html", posts=POSTS, candidats=CANDIDATS)
+    initial_post = next_unvoted_post(session["student_id"])
+    if initial_post is None:
+        return redirect(url_for("confirm"))
+    return render_template(
+        "vote.html",
+        posts=POSTS,
+        candidats=CANDIDATS,
+        initial_post=initial_post,
+    )
 
 @app.route("/confirm")
 def confirm():
     if not require_login():
         return redirect(url_for("login"))
-    return render_template("confirm.html")
+    return render_template("cfonfirm.html")
 
 # API: poster un vote pour un post donné (JSON)
 @app.route("/api/vote", methods=["POST"])
@@ -109,8 +174,10 @@ def api_vote():
     post = data.get("post")
     candidate = data.get("candidate")
     student_id = session["student_id"]
+    expected_post = next_unvoted_post(student_id)
 
-    if post not in POSTS or not candidate:
+    valid_candidates = {item["value"] for item in CANDIDATS.get(post, [])}
+    if post != expected_post or candidate not in valid_candidates:
         return jsonify({"ok": False, "error": "bad_request"}), 400
 
     v = Vote(student_id=student_id, post=post, candidate=candidate)
@@ -119,17 +186,18 @@ def api_vote():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"ok": False, "error": "already_voted"}), 409
+        next_post = next_unvoted_post(student_id)
+        if next_post is None:
+            return jsonify({"ok": False, "error": "already_voted", "done": True}), 409
+        return jsonify({"ok": False, "error": "already_voted", "next": next_post}), 409
 
-    # déterminer le post suivant
-    idx = POSTS.index(post)
-    if idx + 1 < len(POSTS):
-        next_post = POSTS[idx+1]
+    next_post = next_unvoted_post(student_id)
+    if next_post is not None:
         return jsonify({"ok": True, "next": next_post})
-    else:
-        return jsonify({"ok": True, "done": True})
+    return jsonify({"ok": True, "done": True})
 
 # Admin login
+#MDP Admin : adminpass
 @app.route("/admin_login", methods=["GET","POST"])
 def admin_login():
     if request.method == "POST":

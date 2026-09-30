@@ -19,12 +19,16 @@
   <script>
     const POSTS = {{ posts|tojson }}; 
     const CANDIDATS = {{ candidats|tojson }};
-    let current = 0;
+    const INITIAL_POST = {{ initial_post|tojson }};
 
     function renderPost(postName) {
       const div = document.getElementById('flow');
       const cands = CANDIDATS[postName] || [];
       let html = `<h1>Poste : ${postName.replace('_',' ')}</h1>`;
+      if (cands.length === 0) {
+        div.innerHTML = html + `<p>Les candidatures pour ce poste seront ajoutées prochainement.</p>`;
+        return;
+      }
       html += `<form id="form-post">`;
       html += `<div class="candidats">`;
       console.log(cands)
@@ -55,7 +59,10 @@
         if (!res.ok) {
           if (js.error === 'already_voted') {
             alert('Vous avez déjà voté pour ce poste.');
-            // passe au suivant ou confirme
+            if (js.done) {
+              window.location.href = '/confirm';
+              return;
+            }
             if (js.next) renderPost(js.next);
             return;
           }
@@ -73,7 +80,7 @@
     }
 
     // démarrer le flow
-    renderPost(POSTS[0]);
+    renderPost(INITIAL_POST);
   </script>
 </body>
 </html>
