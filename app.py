@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret_in_prod")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///local.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://voting_db_jwuz_user:PlcMcbiyJaqlfbqyhfi6hJgOSsOr71Q6@dpg-dauo8g97lnhs739ai1ig-a/voting_db_jwuz")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
