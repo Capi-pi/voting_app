@@ -26,6 +26,7 @@ class Vote(db.Model):
 
 # --- Posts and Candidates ---
 POSTS = [
+    "président",
     "vice-président",
     "trésorier",
     "responsable communication",
@@ -42,7 +43,10 @@ POSTS = [
 ]
 
 CANDIDATS = {
-    
+    "président": [
+        
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
     "vice-président": [
         {"value": "daouda", "label": "Daouda", "image": ""},
         {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": ""},
@@ -86,6 +90,20 @@ CANDIDATS = {
     ],
 }
 
+for post in POSTS:
+    if not CANDIDATS[post]:
+        CANDIDATS[post] = [
+            {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"}
+        ]
+
+
+def next_unvoted_post(student_id):
+    voted_posts = {
+        post
+        for (post,) in db.session.query(Vote.post).filter_by(student_id=student_id).all()
+    }
+    return next((post for post in POSTS if post not in voted_posts), None)
+
 # --- DB init + WAL ---
 with app.app_context():
     db.create_all()
@@ -128,16 +146,23 @@ def logout():
 
 @app.route("/vote")
 def vote():
-    # Page unique qui héberge le JS et le flow client-side
     if not require_login():
         return redirect(url_for("login"))
-    return render_template("vote.html", posts=POSTS, candidats=CANDIDATS)
+    initial_post = next_unvoted_post(session["student_id"])
+    if initial_post is None:
+        return redirect(url_for("confirm"))
+    return render_template(
+        "vote.html",
+        posts=POSTS,
+        candidats=CANDIDATS,
+        initial_post=initial_post,
+    )
 
 @app.route("/confirm")
 def confirm():
     if not require_login():
         return redirect(url_for("login"))
-    return render_template("confirm.html")
+    return render_template("cfonfirm.html")
 
 # API: poster un vote pour un post donné (JSON)
 @app.route("/api/vote", methods=["POST"])
@@ -149,8 +174,10 @@ def api_vote():
     post = data.get("post")
     candidate = data.get("candidate")
     student_id = session["student_id"]
+    expected_post = next_unvoted_post(student_id)
 
-    if post not in POSTS or not candidate:
+    valid_candidates = {item["value"] for item in CANDIDATS.get(post, [])}
+    if post != expected_post or candidate not in valid_candidates:
         return jsonify({"ok": False, "error": "bad_request"}), 400
 
     v = Vote(student_id=student_id, post=post, candidate=candidate)
@@ -159,17 +186,18 @@ def api_vote():
         db.session.commit()
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"ok": False, "error": "already_voted"}), 409
+        next_post = next_unvoted_post(student_id)
+        if next_post is None:
+            return jsonify({"ok": False, "error": "already_voted", "done": True}), 409
+        return jsonify({"ok": False, "error": "already_voted", "next": next_post}), 409
 
-    # déterminer le post suivant
-    idx = POSTS.index(post)
-    if idx + 1 < len(POSTS):
-        next_post = POSTS[idx+1]
+    next_post = next_unvoted_post(student_id)
+    if next_post is not None:
         return jsonify({"ok": True, "next": next_post})
-    else:
-        return jsonify({"ok": True, "done": True})
+    return jsonify({"ok": True, "done": True})
 
 # Admin login
+#MDP Admin : adminpass
 @app.route("/admin_login", methods=["GET","POST"])
 def admin_login():
     if request.method == "POST":
