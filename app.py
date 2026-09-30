@@ -5,55 +5,95 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from generate_ids import load_ids
 
-# ------------- Generate unique ids -------------------
 generated_ids = load_ids("ids.csv")
-
-# -------------- Load .env variables ---------------
 load_dotenv()
 
-# ------set up and configuration-------
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret_in_prod")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///local.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# --- Model of vote ---
+
 class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(128), nullable=False)
     post = db.Column(db.String(64), nullable=False)
     candidate = db.Column(db.String(128), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
-    __table_args__ = (db.UniqueConstraint('student_id', 'post', name='u_student_post'),)
+    __table_args__ = (db.UniqueConstraint("student_id", "post", name="u_student_post"),)
+
 
 # --- Posts and Candidates ---
 POSTS = [
-    "président"
+    "vice-président",
+    "trésorier",
+    "responsable communication",
+    "responsable relations extérieures",
+    "responsable sport",
+    "responsable organisation",
+    "secrétaire",
+    "adjoint trésorier",
+    "adjoint communication",
+    "adjoint relations extérieures",
+    "adjoint sport",
+    "adjoint organisation",
+    "adjoint secrétaire",
 ]
 
 CANDIDATS = {
-    "président": [
-        {"value": "khadija", "label": "Khadija Aïssé Mangane 1LD", "image": "../static/images/khadija.jpeg"},
-        {"value": "abdoulaye", "label": "El Hadji Abdoulaye Ndiaye 1S2D", "image": "../static/images/abdoulaye.jpeg"},
-        {"value": "coumba", "label": "Coumba Traoré 1LB", "image": "../static/images/coumba.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"}
-
-    ]
+    
+    "vice-président": [
+        {"value": "daouda", "label": "Daouda", "image": ""},
+        {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "trésorier": [],
+    "responsable communication": [],
+    "responsable relations extérieures": [],
+    "responsable sport": [],
+    "responsable organisation": [],
+    "secrétaire": [],
+    "adjoint trésorier": [
+        {"value": "thiane", "label": "Thiane Mbengue", "image": ""},
+        {"value": "seynabou", "label": "Seynabou", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint communication": [
+        {"value": "marie", "label": "Marie Khemesse", "image": ""},
+        {"value": "milike", "label": "Milike", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint relations extérieures": [
+        {"value": "racine", "label": "Racine", "image": ""},
+        {"value": "moustapha", "label": "Moustapha Sarr", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint sport": [
+        {"value": "madiaw", "label": "Madiaw Diouf", "image": ""},
+        {"value": "cheikh", "label": "Cheikh Niang", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint organisation": [
+        {"value": "mamy", "label": "Mamy Thiam", "image": ""},
+        {"value": "raymonde", "label": "Raymonde", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
+    "adjoint secrétaire": [
+        {"value": "khadija", "label": "Khadija Ndiaye", "image": ""},
+        {"value": "akapata", "label": "Akpata Ormiel", "image": ""},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    ],
 }
-
-
 
 # --- DB init + WAL ---
 with app.app_context():
     db.create_all()
-    # Improve concurrent writes in SQLite
     try:
         db.session.execute("PRAGMA journal_mode=WAL;")
     except Exception:
         pass
 
-# --- Helpers ---
 def require_login():
     if "student_id" not in session:
         return False
