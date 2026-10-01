@@ -141,7 +141,7 @@ def vote():
 def confirm():
     if not require_login():
         return redirect(url_for("login"))
-    return render_template("cfonfirm.html")
+    return render_template("confirm.html")
 
 # API: poster un vote pour un post donné (JSON)
 @app.route("/api/vote", methods=["POST"])
