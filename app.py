@@ -26,14 +26,7 @@ class Vote(db.Model):
 
 # --- Posts and Candidates ---
 POSTS = [
-    "président",
     "vice-président",
-    "trésorier",
-    "responsable communication",
-    "responsable relations extérieures",
-    "responsable sport",
-    "responsable organisation",
-    "secrétaire",
     "adjoint trésorier",
     "adjoint communication",
     "adjoint relations extérieures",
