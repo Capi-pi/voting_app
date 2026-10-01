@@ -10,7 +10,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "change_this_secret_in_prod")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://voting_db_jwuz_user:PlcMcbiyJaqlfbqyhfi6hJgOSsOr71Q6@dpg-dauo8g97lnhs739ai1ig-a/voting_db_jwuz")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -44,7 +44,6 @@ POSTS = [
 
 CANDIDATS = {
     "président": [
-        
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "vice-président": [
@@ -104,13 +103,9 @@ def next_unvoted_post(student_id):
     }
     return next((post for post in POSTS if post not in voted_posts), None)
 
-# --- DB init + WAL ---
+# --- DB init ---
 with app.app_context():
     db.create_all()
-    try:
-        db.session.execute("PRAGMA journal_mode=WAL;")
-    except Exception:
-        pass
 
 def require_login():
     if "student_id" not in session:
@@ -127,7 +122,6 @@ def root():
 
 @app.route("/login", methods=["GET","POST"])
 def login():
-    # GET -> render login, POST -> set session student_id and redirect to /vote
     if request.method == "POST":
         student_id = request.form.get("student_id", "").strip()
         if not student_id:
@@ -197,7 +191,6 @@ def api_vote():
     return jsonify({"ok": True, "done": True})
 
 # Admin login
-#MDP Admin : adminpass
 @app.route("/admin_login", methods=["GET","POST"])
 def admin_login():
     if request.method == "POST":
@@ -240,33 +233,6 @@ def admin():
         votes=votes,
         non_voters=non_voters
     )
-
-
-
-""" @app.route("/admin")
-def admin():
-    if not require_admin():
-        return redirect(url_for("admin_login"))
-
-    # Résultats agrégés (post, candidate, count)
-    rows = db.session.query(Vote.post, Vote.candidate, db.func.count(Vote.id)) \
-                    .group_by(Vote.post, Vote.candidate).all()
-
-    # transform to dict {post: [(candidate, count), ...], ...}
-    results = {}
-    for post, candidate, count in rows:
-        results.setdefault(post, []).append((candidate, int(count)))
-
-    # Préparer une version sérialisable pour JS: {post: [{candidate, count}, ...], ...}
-    results_js = {}
-    for post, rows in results.items():
-        results_js[post] = [{"candidate": cand, "count": cnt} for (cand, cnt) in rows]
-
-    votes = Vote.query.order_by(Vote.timestamp.desc()).all()
-    return render_template("admin.html",
-                           results=results,
-                           votes=votes,
-                           results_js=results_js) """
 
 
 # Export CSV simple
