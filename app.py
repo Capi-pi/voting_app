@@ -43,48 +43,41 @@ POSTS = [
 ]
 
 CANDIDATS = {
-    "président": [
+    "vice-président":
+    [
+        {"value": "daouda", "label": "Daouda", "image": "../static/images/daouda.jpeg"},
+        {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": "../static/images/mouhamadou.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
-    "vice-président": [
-        {"value": "daouda", "label": "Daouda", "image": ""},
-        {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": ""},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
-    ],
-    "trésorier": [],
-    "responsable communication": [],
-    "responsable relations extérieures": [],
-    "responsable sport": [],
-    "responsable organisation": [],
-    "secrétaire": [],
-    "adjoint trésorier": [
-        {"value": "thiane", "label": "Thiane Mbengue", "image": ""},
-        {"value": "seynabou", "label": "Seynabou", "image": ""},
+    "adjoint trésorier": 
+    [
+        {"value": "thiane", "label": "Thiane Mbengue", "image": "../static/images/thiane.jpeg"},
+        {"value": "seynabou", "label": "Seynabou", "image": "../static/images/seynabou.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint communication": [
-        {"value": "marie", "label": "Marie Khemesse", "image": ""},
-        {"value": "milike", "label": "Milike", "image": ""},
+        {"value": "marie", "label": "Marie Khemesse", "image": "../static/images/mari.jpeg"},
+        {"value": "milike", "label": "Milike", "image": "../static/images/milike.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint relations extérieures": [
-        {"value": "racine", "label": "Racine", "image": ""},
-        {"value": "moustapha", "label": "Moustapha Sarr", "image": ""},
+        {"value": "racine", "label": "Racine", "image": "../static/images/racine.jpeg"},
+        {"value": "moustapha", "label": "Moustapha Sarr", "image": "../static/images/moustapha.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint sport": [
-        {"value": "madiaw", "label": "Madiaw Diouf", "image": ""},
-        {"value": "cheikh", "label": "Cheikh Niang", "image": ""},
+        {"value": "madiaw", "label": "Madiaw Diouf", "image": "../static/images/madiaw.jpeg"},
+        {"value": "cheikh", "label": "Cheikh Niang", "image": "../static/images/cheikh.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint organisation": [
-        {"value": "mamy", "label": "Mamy Thiam", "image": ""},
-        {"value": "raymonde", "label": "Raymonde", "image": ""},
+        {"value": "mamy", "label": "Mamy Thiam", "image": "../static/images/mamy.jpeg"},
+        {"value": "raymonde", "label": "Raymonde", "image": "../static/images/raymonde.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
     "adjoint secrétaire": [
-        {"value": "khadija", "label": "Khadija Ndiaye", "image": ""},
-        {"value": "akapata", "label": "Akpata Ormiel", "image": ""},
+        {"value": "khadija", "label": "Khadija Ndiaye", "image": "../static/images/khadija.jpeg"},
+        {"value": "akpata", "label": "Akpata Ormiel", "image": "../static/images/akpata.jpeg"},
         {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
     ],
 }
