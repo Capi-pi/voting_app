@@ -35,50 +35,49 @@ POSTS = [
     "adjoint secrétaire",
 ]
 
+# On stocke juste le nom du fichier image (ou le chemin relatif propre)
 CANDIDATS = {
-    "vice-président":
-    [
-        {"value": "daouda", "label": "Daouda", "image": "../static/images/daouda.jpeg"},
-        {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": "../static/images/mouhamadou.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    "vice-président": [
+        {"value": "daouda", "label": "Daouda", "image": "images/daouda.jpeg"},
+        {"value": "mouhamadou", "label": "Mouhamadou Guindo", "image": "images/mouhamadou.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
-    "adjoint trésorier": 
-    [
-        {"value": "thiane", "label": "Thiane Mbengue", "image": "../static/images/thiane.jpeg"},
-        {"value": "seynabou", "label": "Seynabou", "image": "../static/images/seynabou.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+    "adjoint trésorier": [
+        {"value": "thiane", "label": "Thiane Mbengue", "image": "images/thiane.jpeg"},
+        {"value": "seynabou", "label": "Seynabou", "image": "images/seynabou.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
     "adjoint communication": [
-        {"value": "marie", "label": "Marie Khemesse", "image": "../static/images/mari.jpeg"},
-        {"value": "milike", "label": "Milike", "image": "../static/images/milike.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+        {"value": "marie", "label": "Marie Khemesse", "image": "images/mari.jpeg"},
+        {"value": "milike", "label": "Milike", "image": "images/milike.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
     "adjoint relations extérieures": [
-        {"value": "racine", "label": "Racine", "image": "../static/images/racine.jpeg"},
-        {"value": "moustapha", "label": "Moustapha Sarr", "image": "../static/images/moustapha.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+        {"value": "racine", "label": "Racine", "image": "images/racine.jpeg"},
+        {"value": "moustapha", "label": "Moustapha Sarr", "image": "images/moustapha.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
     "adjoint sport": [
-        {"value": "madiaw", "label": "Madiaw Diouf", "image": "../static/images/madiaw.jpeg"},
-        {"value": "cheikh", "label": "Cheikh Niang", "image": "../static/images/cheikh.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+        {"value": "madiaw", "label": "Madiaw Diouf", "image": "images/madiaw.jpeg"},
+        {"value": "cheikh", "label": "Cheikh Niang", "image": "images/cheikh.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
     "adjoint organisation": [
-        {"value": "mamy", "label": "Mamy Thiam", "image": "../static/images/mamy.jpeg"},
-        {"value": "raymonde", "label": "Raymonde", "image": "../static/images/raymonde.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+        {"value": "mamy", "label": "Mamy Thiam", "image": "images/mamy.jpeg"},
+        {"value": "raymonde", "label": "Raymonde", "image": "images/raymonde.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
     "adjoint secrétaire": [
-        {"value": "khadija", "label": "Khadija Ndiaye", "image": "../static/images/khadija.jpeg"},
-        {"value": "akpata", "label": "Akpata Ormiel", "image": "../static/images/akpata.jpeg"},
-        {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"},
+        {"value": "khadija", "label": "Khadija Ndiaye", "image": "images/khadija.jpeg"},
+        {"value": "akpata", "label": "Akpata Ormiel", "image": "images/akpata.jpeg"},
+        {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"},
     ],
 }
 
 for post in POSTS:
-    if not CANDIDATS[post]:
+    if post not in CANDIDATS or not CANDIDATS[post]:
         CANDIDATS[post] = [
-            {"value": "vote-blanc", "label": "Vote Blanc", "image": "../static/images/vote-blanc.png"}
+            {"value": "vote-blanc", "label": "Vote Blanc", "image": "images/vote-blanc.png"}
         ]
 
 
