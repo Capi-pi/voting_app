@@ -236,6 +236,21 @@ def export_csv():
     return app.response_class(output, mimetype="text/csv", headers={"Content-Disposition":"attachment;filename=votes.csv"})
 
 
+@app.route("/reset_db")
+def reset_db():
+    if not require_admin():
+        return redirect(url_for("admin_login"))
+    
+    try:
+        # Supprime tous les enregistrements de la table Vote
+        db.session.query(Vote).delete()
+        db.session.commit()
+        return "Base de données réinitialisée avec succès ! Tous les votes ont été effacés."
+    except Exception as e:
+        db.session.rollback()
+        return f"Erreur lors de la réinitialisation : {str(e)}"
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
